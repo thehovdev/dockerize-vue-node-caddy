@@ -1,0 +1,5 @@
+FROM node:14-stretch    
+COPY ./server /server
+WORKDIR /server
+RUN git config --global url."https://".insteadOf git://
+RUN npm install && npm install --global nodemon

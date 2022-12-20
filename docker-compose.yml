@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+    fe: 
+        container_name: fe
+        build: 
+            context: .
+            dockerfile: Dockerfile.fe
+        ports:
+            - 3000:3000
+        volumes:
+            - .:/src
+            - /src/node_modules
+        command: npm run dev
+    express: 
+        container_name: express
+        build: 
+            context: .
+            dockerfile: Dockerfile.express
+        ports:
+            - 4000:4000
+        volumes:
+            - ./server:/server
+            - /server/node_modules
+        command: npx nodemon
+    caddy:
+        image: caddy:2-alpine
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+            - "443:443/udp"
+        volumes:
+            - ./Caddyfile:/etc/caddy/Caddyfile
+            - .:/srv
+            - caddy_data:/data
+            - caddy_config:/config
+        command: caddy run
+        
+        depends_on: 
+            - fe
+            - express
+
+        
+volumes:
+  caddy_data:
+  caddy_config:
